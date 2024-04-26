@@ -7,10 +7,14 @@ import CreatePollPage from './components/CreatePollPage';
 import PollDetailsPage from './components/PollDetailsPage';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { Amplify } from 'aws-amplify';
+import { withAuthenticator, Button, Heading } from '@aws-amplify/ui-react';
+import awsconfig from './aws-exports';
 
-// Amplify.configure(awsExports);
 
-function App() {
+Amplify.configure(awsconfig);
+
+function App({ signOut }) {
   const [theme, setTheme] = useState(lightTheme);
 
   const toggleTheme = () => {
@@ -24,6 +28,7 @@ function App() {
           <IconButton onClick={toggleTheme} sx={{ position: 'fixed', top: 10, right: 10 }}>
             {theme === lightTheme ? <Brightness4Icon /> : <Brightness7Icon />}
           </IconButton>
+          <button onClick={signOut}>Sign out</button>
           <Router>
             <Routes>
               <Route path='/' element={<HomePage />} />
@@ -34,6 +39,13 @@ function App() {
         </Container>
     </ThemeProvider>
   );
+//   return (
+//     <div>
+//     <h1>Thankyou for doing verification</h1>
+//     <h2>My Content</h2>
+//      <button onClick={signOut}>Sign out</button>
+//   </div>
+// );
 }
 
-export default App;
+export default withAuthenticator(App);
