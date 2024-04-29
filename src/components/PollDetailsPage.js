@@ -9,6 +9,7 @@ function PollDetailsPage() {
   const { id } = useParams();
   const [poll, setPoll] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [hasVoted, setHasVoted] = useState(false);
 
   useEffect(() => {
     const fetchPollDetails = async () => {
@@ -29,7 +30,6 @@ function PollDetailsPage() {
   const handleVote = async (selectedOption) => {
     try {
       // Check if user has already voted on this poll
-      const hasVoted = localStorage.getItem(`poll_${id}`);
       if (hasVoted) {
         alert('You have already voted on this poll.');
         return;
@@ -41,6 +41,8 @@ function PollDetailsPage() {
       };
      
       await axios.post(`${API_URL}/vote`, requestBody);
+      setHasVoted(true);
+      setSelectedOption(selectedOption);
     } catch (error) {
       console.error('Error voting:', error);
     }
@@ -63,16 +65,13 @@ function PollDetailsPage() {
           {poll.options.map((option) => (
             <ListItem key={option}>
               <Button 
-                onClick={() => {
-                  handleVote(option);
-                  setSelectedOption(option);
-                }} 
+                onClick={() => handleVote(option)} 
                 variant="contained" 
                 color="primary" 
-                disabled={selectedOption === option}
+                disabled={hasVoted || selectedOption === option}
                 fullWidth
               >
-                {option} {selectedOption === option && `- Voted`}
+                {option} {(hasVoted && selectedOption === option) && `- Voted`}
               </Button>
             </ListItem>
           ))}
