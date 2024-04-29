@@ -1,0 +1,17 @@
++----------------+         +-------------------+        +--------------+
+|     Users      |         |     Polls         |        |  UserVotes   |
++----------------+         +-------------------+        +--------------+
+| UserId (PK)    |<-------o| PollId (PK)       |<-------| UserId (PK)  |
+|                |         | Options           |        | PollId (PK)  |
+|                |         | Question          |        | Option       |
+|                |         |                   |        +--------------+
++----------------+         |                   |
+                            |                   |
+                            +-------------------+
+
+Explanation:
+Users table simply stores the id of all users. When a new user is created in Cognito, it triggers an API call to add that user's id to this table.
+
+Polls table is where the information regarding polls is held. The unique id the poll has is generated upon creation and is a string. Question is the question the poll is asking users about. Options is a List of Strings with the options a user may select from to reply to the poll.
+
+UserVotes table is used to keep track of what a user votes for. It has the UserId, PollId, and the Option. The Option is a String corressponding to one of the options from the poll.
