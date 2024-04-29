@@ -11,17 +11,20 @@ function PollDetailsPage() {
   const [selectedOption, setSelectedOption] = useState(null);
 
   useEffect(() => {
-    fetchPollDetails();
-  }, [id]);
+    const fetchPollDetails = async () => {
+      try {
+        const response = await axios.post(`${API_URL}/getPollResults`, { pollId: id });
+        setPoll(response.data);
+      } catch (error) {
+        console.error('Error fetching poll details:', error);
+      }
+    };
 
-  const fetchPollDetails = async () => {
-    try {
-      const response = await axios.post(`${API_URL}/getPollResults`, { pollId: id });
-      setPoll(response.data);
-    } catch (error) {
-      console.error('Error fetching poll details:', error);
-    }
-  };
+    const pollDetailsTimer = setInterval(fetchPollDetails, 2000); // Fetch every 2 seconds
+
+    // Clear the interval when the component unmounts or when the ID changes
+    return () => clearInterval(pollDetailsTimer);
+  }, [id]);
 
   const handleVote = async (selectedOption) => {
     try {
@@ -38,10 +41,6 @@ function PollDetailsPage() {
       };
      
       await axios.post(`${API_URL}/vote`, requestBody);
-      fetchPollDetails();
-
-      // Store in local storage that user has voted on this poll
-      localStorage.setItem(`poll_${id}`, true);
     } catch (error) {
       console.error('Error voting:', error);
     }
@@ -64,7 +63,10 @@ function PollDetailsPage() {
           {poll.options.map((option) => (
             <ListItem key={option}>
               <Button 
-                onClick={() => handleVote(option)} 
+                onClick={() => {
+                  handleVote(option);
+                  setSelectedOption(option);
+                }} 
                 variant="contained" 
                 color="primary" 
                 disabled={selectedOption === option}
