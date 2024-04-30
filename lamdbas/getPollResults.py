@@ -7,7 +7,19 @@ polls_table = dynamodb.Table('Polls')  # Replace 'Polls' with your DynamoDB tabl
 
 def lambda_handler(event, context):
     try:
-        print("HELLO!")
+        # Check if the request body is present and is a valid JSON
+        if 'body' not in event:
+            return {
+                'statusCode': 400,
+                'headers': {
+                    'Access-Control-Allow-Origin': '*',  # Allow requests from any origin
+                    'Access-Control-Allow-Headers': 'Content-Type',  # Allow only Content-Type header
+                    'Access-Control-Allow-Methods': 'OPTIONS, POST'  # Allow OPTIONS and POST methods
+                },
+                'body': json.dumps({
+                    'error': 'Request body is missing'
+                })
+            }
         # Extract poll ID from the request body
         request_body = json.loads(event['body'])
         print(request_body)
